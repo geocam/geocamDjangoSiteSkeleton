@@ -1,0 +1,12 @@
+*.pyc
+dev.db
+settings.py
+media/ugc
+docs/_build/
+src/
+pip-log.txt
+media/js/*.r*.js
+media/css/*.r*.css
+*DS_Store
+*.egg-info
+*~
