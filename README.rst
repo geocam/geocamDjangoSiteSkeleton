@@ -5,4 +5,9 @@ This repo contains a django-site skeleton generator. It is meant to be used with
 
 .. _django-app-skeleton: https://github.com/geocam/geocamDjangoAppSkeleton
 
-| __NO_RELICENSE__
+| __BEGIN_LICENSE__
+| Copyright (C) 2008-2010 United States Government as represented by
+| the Administrator of the National Aeronautics and Space Administration.
+| All Rights Reserved.
+| __END_LICENSE__
+
