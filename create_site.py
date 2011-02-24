@@ -3,9 +3,6 @@
 
 import os, random, subprocess, sys
 
-print >>sys.stderr, "%s is not usable yet! Do not use (but you can fix!)" % sys.argv[0]
-sys.exit(1)
-
 CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
 BLACKLIST = (
     '.tar.gz',
@@ -87,17 +84,15 @@ if __name__ == '__main__':
     from optparse import OptionParser
     parser = OptionParser()
     parser.add_option("-a", "--author", dest="author", help="The name of the author.")
-    parser.add_option("-n", "--name", dest="app_name", help="The name of the application, like 'django-coolapp'.")
-    parser.add_option("-p", "--package", dest="pkg_name", help="The name of the installed package, like 'coolapp'.")
+    parser.add_option("-n", "--name", dest="site_name", help="The name of the site, like 'geocamAwesome'.")
     parser.add_option("-v", "--VIRTENV", dest="VIRTENV", help="The name of the virtualenv.")
-    parser.add_option("-d", "--dest", dest="destination", help="Where to put the new application. Relative paths are recognized.")
-    parser.add_option("-t", "--template", dest="template", help="The application template to use as a basis for the new application.", default=os.path.abspath(os.path.join(os.path.dirname(__file__), 'skel')))
+    parser.add_option("-d", "--dest", dest="destination", help="Where to put the new site. Relative paths are recognized.")
+    parser.add_option("-t", "--template", dest="template", help="The template to use as a basis for the new site.", default=os.path.abspath(os.path.join(os.path.dirname(__file__), 'skel')))
     parser.add_option('--use-virtenv', dest='use_virtenv', action='store_true', default=False, help="Use a virtual env")
     (options, args) = parser.parse_args()
     
     repl = {
-        'APP_NAME': None,
-        'PKG_NAME': None,
+        'SITE_NAME': None,
         'AUTHOR': None,
         'SITE_SECRET': gen_secret()
     }
@@ -106,19 +101,13 @@ if __name__ == '__main__':
     
     cur_user = os.getlogin()
     
-    if options.app_name:
-        repl['APP_NAME'] = options.app_name
+    if options.site_name:
+        repl['SITE_NAME'] = options.site_name
     elif len(args) > 0:
-        repl['APP_NAME'] = args[0]
+        repl['SITE_NAME'] = args[0]
     
-    while not repl['APP_NAME']:
-        repl['APP_NAME'] = raw_input('Application name: ')
-    
-    if options.pkg_name:
-        repl['PKG_NAME'] = options.pkg_name
-    while not repl['PKG_NAME']:
-        default_name = repl['APP_NAME'].replace('django-', '')
-        repl['PKG_NAME'] = raw_input('Package Name [%s]:' % default_name) or default_name
+    while not repl['SITE_NAME']:
+        repl['SITE_NAME'] = raw_input('Site name: ')
     
     if options.author:
         repl['AUTHOR'] = options.author
@@ -133,14 +122,14 @@ if __name__ == '__main__':
     while not dest_dir:
         dest_dir = raw_input('Destination directory [%s]: ' % (os.getcwd(),)) or os.getcwd()
     dest_dir =  os.path.realpath(os.path.expanduser(dest_dir))
-    dest = os.path.join(dest_dir, repl['APP_NAME'])
+    dest = os.path.join(dest_dir, repl['SITE_NAME'])
 
     if options.template:
         templ_dir = options.template
 
     default = os.path.abspath(os.path.join(os.path.dirname(__file__), 'skel'))
     while not templ_dir:
-        templ_dir = raw_input('Application template directory [%s]: ' % default) or default
+        templ_dir = raw_input('Site template directory [%s]: ' % default) or default
     templ_dir = os.path.realpath(os.path.expanduser(templ_dir))
     if templ_dir[-1] != '/':
         templ_dir = templ_dir + "/"
@@ -154,6 +143,6 @@ if __name__ == '__main__':
         repl['VIRTENV'] = 'NONE'
     else:
         while not repl['VIRTENV']:
-            repl['VIRTENV'] = raw_input('Virtual environment name [%s]: ' % repl['APP_NAME']) or repl['APP_NAME']
+            repl['VIRTENV'] = raw_input('Virtual environment name [%s]: ' % repl['SITE_NAME']) or repl['SITE_NAME']
 
     main(repl, dest, templ_dir)
