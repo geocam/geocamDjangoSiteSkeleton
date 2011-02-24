@@ -20,7 +20,7 @@ def read_file(filename):
         return ''
 
 # Use the docstring of the __init__ file to be the description
-#DESC = " ".join(__import__('$$$$PKG_NAME$$$$').__doc__.splitlines()).strip()
+#DESC = " ".join(__import__('$$$$SITE_NAME$$$$').__doc__.splitlines()).strip()
 DESC = ""
 
 PROJ_ROOT = op.abspath(op.dirname(__file__))
@@ -166,8 +166,8 @@ class MediaCommand(Command):
         
 
 setup(
-    name = "$$$$APP_NAME$$$$",
-    version = '1.0', #__import__('$$$$PKG_NAME$$$$').get_version().replace(' ', '-'),
+    name = "$$$$SITE_NAME$$$$",
+    version = '1.0', #__import__('$$$$SITE_NAME$$$$').get_version().replace(' ', '-'),
     url = '',
     author = '$$$$AUTHOR$$$$',
     author_email = '',
