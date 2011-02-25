@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+# __BEGIN_LICENSE__
+# Copyright (C) 2008-2010 United States Government as represented by
+# the Administrator of the National Aeronautics and Space Administration.
+# All Rights Reserved.
+# __END_LICENSE__
 
 """
 This bootstrap script does the first stage of prep work for a Django
@@ -80,7 +85,7 @@ def writeFileMakeDir(path, text):
     if not os.path.exists(dir):
         os.makedirs(dir)
     f = file(path, 'w')
-    f.write(text)
+    f.write(text+'\n')
     f.close()
 
 def fillTemplate(inputFile, outputFile, context):
@@ -198,6 +203,9 @@ def doit(opts):
     logging.info('working in %s' % os.getcwd())
     for action in ACTIONS:
         doAction(opts, action)
+
+    # mark overall completion
+    writeFileMakeDir(STATUS_PATH_TEMPLATE % 'bootstrap', 'DONE')
 
 def main():
     import optparse
