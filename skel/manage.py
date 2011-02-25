@@ -5,6 +5,14 @@
 # All Rights Reserved.
 # __END_LICENSE__
 
+import os
+if not os.path.exists('build/management/bootstrap/bootstrapStatus.txt'):
+    import sys
+    print 'bootstrapping...'
+    os.system('%s management/bootstrap.py -v' % sys.executable)
+    print '\nnow "source sourceme.sh" and run your manage.py command again'
+    sys.exit(0)
+
 from django.core.management import execute_manager
 try:
     import settings # Assumed to be in the same directory.

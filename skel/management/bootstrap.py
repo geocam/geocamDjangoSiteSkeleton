@@ -91,7 +91,8 @@ def writeFileMakeDir(path, text):
 def fillTemplate(inputFile, outputFile, context):
     from django.template import Template, Context
     from django.conf import settings
-    settings.configure()
+    if not settings.configured:
+        settings.configure()
     tmpl = Template(file(inputFile, 'r').read())
     text = tmpl.render(Context(context))
     file(outputFile, 'w').write(text)
