@@ -22,8 +22,8 @@ whole reason we need a bootstrap step is to make sure things like
 geocamUtil are available...
 """
 
-import sys
 import os
+import sys
 from glob import glob
 import logging
 from random import choice
@@ -35,13 +35,13 @@ SETTINGS_NAME = 'settings.py'
 STATUS_PATH_TEMPLATE = 'build/management/bootstrap/%sStatus.txt'
 
 ACTIONS = (dict(name='gitInitSubmodules',
-                desc="Init and update submodules",
+                desc="init and update submodules",
                 confirm=True),
            dict(name='linkSubmodules',
-                desc='Link submodules into apps directory',
+                desc='link submodules into apps directory',
                 confirm=True),
            dict(name='installDjango',
-                desc='Install Django',
+                desc='install Django',
                 confirm=True,
                 needed='needDjango'),
            dict(name='genSourceme',
@@ -49,6 +49,7 @@ ACTIONS = (dict(name='gitInitSubmodules',
            dict(name='genSettings',
                 needed='needSettings'),
            )
+ACTION_DICT = dict([(a['name'], a) for a in ACTIONS])
 
 def getConfirmation(opts, actionStr):
     if opts.yes:
@@ -196,10 +197,24 @@ def doAction(opts, action):
     if not neededName:
         writeFileMakeDir(STATUS_PATH_TEMPLATE % action['name'], 'DONE')
 
-def doit(opts):
+def doit(opts, args):
+    os.chdir(opts.siteDir)
+    if os.path.exists('build/management/bootstrap/bootstrapStatus.txt'):
+        sys.exit(0)
+    print 'bootstrapping...'
+
     logging.basicConfig(level=(logging.WARNING - opts.verbose * 10),
                         format='%(message)s')
-    os.chdir(opts.siteDir)
+    
+    if args:
+        for arg in args:
+            if arg not in ACTION_DICT:
+                print >>sys.stderr, 'ERROR: there is no action %s' % arg
+                print >>sys.stderr, 'available actions are: %s' % (' '.join([a['name'] for a in ACTIONS]))
+                sys.exit(1)
+        actions = [ACTION_DICT[arg] for arg in args]
+    else:
+        actions = ACTIONS
     
     logging.info('working in %s' % os.getcwd())
     for action in ACTIONS:
@@ -208,9 +223,12 @@ def doit(opts):
     # mark overall completion
     writeFileMakeDir(STATUS_PATH_TEMPLATE % 'bootstrap', 'DONE')
 
+    print '\nnow "source sourceme.sh" before running manage.py again'
+    sys.exit(1)
+
 def main():
     import optparse
-    parser = optparse.OptionParser('usage: %prog')
+    parser = optparse.OptionParser('usage: %prog [action1 action2 ...]')
     parser.add_option('-y', '--yes',
                       action='store_true', default=False,
                       help='Automatically answer yes to all confirmation questions')
@@ -221,7 +239,7 @@ def main():
                       action='count', default=0,
                       help='Increase verbosity, can specify multiple times')
     opts, args = parser.parse_args()
-    doit(opts)
+    doit(opts, args)
 
 if __name__ == '__main__':
     main()

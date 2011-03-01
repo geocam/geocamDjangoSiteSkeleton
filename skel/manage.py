@@ -6,12 +6,12 @@
 # __END_LICENSE__
 
 import os
-if not os.path.exists('build/management/bootstrap/bootstrapStatus.txt'):
-    import sys
-    print 'bootstrapping...'
-    os.system('%s management/bootstrap.py -v' % sys.executable)
-    print '\nnow "source sourceme.sh" and run your manage.py command again'
-    sys.exit(0)
+import sys
+
+# try to bootstrap before hooking into django management stuff
+ret = os.spawnl(os.P_WAIT, sys.executable, sys.executable, '%s/management/bootstrap.py' % os.path.dirname(__file__), '-v')
+if ret != 0:
+    sys.exit(ret)
 
 from django.core.management import execute_manager
 try:
