@@ -110,12 +110,13 @@ def linkSubmodules(opts):
     submoduleAppDirs = [os.path.dirname(d) for d in glob('submodules/*/*/models*')]
     for src in submoduleAppDirs:
         appName = os.path.basename(src)
+        relativeSrc = '../%s' % src
         dst = 'apps/%s' % appName
-        if os.path.exists(dst):
-            logging.debug('  %s -> %s skipped (already exists)' % (dst, src))
+        if os.path.lexists(dst):
+            logging.debug('  %s -> %s skipped (already exists)' % (dst, relativeSrc))
         else:
-            logging.debug('  %s -> %s' % (dst, src))
-            os.symlink(src, dst)
+            logging.debug('  %s -> %s' % (dst, relativeSrc))
+            os.symlink(relativeSrc, dst)
 
 def needDjango(opts):
     try:
