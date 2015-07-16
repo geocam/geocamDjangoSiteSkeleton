@@ -1,8 +1,17 @@
-#!/usr/bin/env python
 # __BEGIN_LICENSE__
-# Copyright (C) 2008-2010 United States Government as represented by
-# the Administrator of the National Aeronautics and Space Administration.
-# All Rights Reserved.
+# Copyright (c) 2015, United States Government, as represented by the
+# Administrator of the National Aeronautics and Space Administration.
+# All rights reserved.
+#
+# The xGDS platform is licensed under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# http://www.apache.org/licenses/LICENSE-2.0.
+#
+# Unless required by applicable law or agreed to in writing, software distributed
+# under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+# CONDITIONS OF ANY KIND, either express or implied. See the License for the
+# specific language governing permissions and limitations under the License.
 # __END_LICENSE__
 
 """
@@ -51,14 +60,15 @@ ACTIONS = (dict(name='gitInitSubmodules',
            )
 ACTION_DICT = dict([(a['name'], a) for a in ACTIONS])
 
+
 def getConfirmation(opts, actionStr):
     if opts.yes:
-        sys.stdout.write(actionStr+'? [Y/n] ')
+        sys.stdout.write(actionStr + '? [Y/n] ')
         print 'y'
         return True
     else:
         while 1:
-            sys.stdout.write(actionStr+'? [Y/n] ')
+            sys.stdout.write(actionStr + '? [Y/n] ')
             response = raw_input().strip().lower()
             if not response:
                 return True
@@ -66,6 +76,7 @@ def getConfirmation(opts, actionStr):
                 return True
             elif response == 'n':
                 return False
+
 
 def dosys(cmd, continueOnError=False):
     if cmd.startswith('sudo'):
@@ -81,13 +92,15 @@ def dosys(cmd, continueOnError=False):
             logging.error('error: command returned non-zero return value %d' % ret)
             sys.exit(1)
 
+
 def writeFileMakeDir(path, text):
-    dir = os.path.dirname(path)
-    if not os.path.exists(dir):
-        os.makedirs(dir)
+    theDir = os.path.dirname(path)
+    if not os.path.exists(theDir):
+        os.makedirs(theDir)
     f = file(path, 'w')
-    f.write(text+'\n')
+    f.write(text + '\n')
     f.close()
+
 
 def fillTemplate(inputFile, outputFile, context):
     from django.template import Template, Context
@@ -101,9 +114,11 @@ def fillTemplate(inputFile, outputFile, context):
 ######################################################################
 # ACTION DEFINITIONS
 
+
 def gitInitSubmodules(opts):
     dosys('git submodule init')
     dosys('git submodule update')
+
 
 def linkSubmodules(opts):
     if not os.path.exists('apps'):
@@ -120,6 +135,7 @@ def linkSubmodules(opts):
             logging.debug('  %s -> %s' % (dst, relativeSrc))
             os.symlink(relativeSrc, dst)
 
+
 def needDjango(opts):
     try:
         import django
@@ -127,16 +143,19 @@ def needDjango(opts):
         return True
     return False
 
+
 def installDjango(opts):
-    needSudo = not os.environ.has_key('VIRTUALENV')
+    needSudo = 'VIRTUALENV' not in os.environ
     if needSudo:
         sudoStr = 'sudo '
     else:
         sudoStr = ''
     dosys('%spip install django' % sudoStr)
 
+
 def needSourceme(opts):
     return not os.path.exists(SOURCEME_NAME)
+
 
 def genSourceme(opts):
     logging.info('generating %s' % SOURCEME_NAME)
@@ -148,8 +167,10 @@ def genSourceme(opts):
                       appsDir=os.path.abspath('apps')
                       ))
 
+
 def needSettings(opts):
     return not os.path.exists(SETTINGS_NAME)
+
 
 def genSettings(opts):
     logging.info('generating %s' % SETTINGS_NAME)
@@ -160,6 +181,7 @@ def genSettings(opts):
                  SETTINGS_NAME,
                  dict(secretKey=secretKey))
 
+
 def needAction(opts, action):
     statusFile = STATUS_PATH_TEMPLATE % action['name']
     if os.path.exists(statusFile):
@@ -169,6 +191,7 @@ def needAction(opts, action):
 
 ######################################################################
 # TOP-LEVEL CODE
+
 
 def doAction(opts, action):
     # check if we need to do the action
@@ -186,12 +209,12 @@ def doAction(opts, action):
         if status:
             logging.info('skipping step %s, status is %s' % (action['name'], status))
             return
-    
+
     # confirm with user
-    if action.has_key('confirm') and not getConfirmation(opts, action['desc']):
+    if 'confirm' in action and not getConfirmation(opts, action['desc']):
         writeFileMakeDir(STATUS_PATH_TEMPLATE % action['name'], 'UNWANTED')
         return
-            
+
     # do the action
     actionFunc = globals()[action['name']]
     actionFunc(opts)
@@ -199,6 +222,7 @@ def doAction(opts, action):
     # mark completion (unless special check function is defined)
     if not neededName:
         writeFileMakeDir(STATUS_PATH_TEMPLATE % action['name'], 'DONE')
+
 
 def doit(opts, args):
     os.chdir(opts.siteDir)
@@ -208,7 +232,7 @@ def doit(opts, args):
 
     logging.basicConfig(level=(logging.WARNING - opts.verbose * 10),
                         format='%(message)s')
-    
+
     if args:
         for arg in args:
             if arg not in ACTION_DICT:
@@ -218,9 +242,9 @@ def doit(opts, args):
         actions = [ACTION_DICT[arg] for arg in args]
     else:
         actions = ACTIONS
-    
+
     logging.info('working in %s' % os.getcwd())
-    for action in ACTIONS:
+    for action in actions:
         doAction(opts, action)
 
     # mark overall completion
@@ -228,6 +252,7 @@ def doit(opts, args):
 
     print '\nnow "source sourceme.sh" before running manage.py again'
     sys.exit(1)
+
 
 def main():
     import optparse

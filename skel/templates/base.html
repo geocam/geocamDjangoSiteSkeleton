@@ -1,0 +1,116 @@
+<!doctype html>
+{% load url from future %}
+{% load pipeline %}
+{% load staticfiles %}
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+  	<meta charset="utf-8">
+    <title>
+    {% block siteTitle %}{% block siteSection %}{% endblock siteSection%} {% block siteTitle %}$$$$SITE_NAME$$$${% endblock siteTitle%}{% endblock title%}
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <script src="{{ EXTERNAL_URL }}modernizr/modernizr.js"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'gumby/css/gumby.css' %}">
+ 	{% block cssExtras %}
+    {% endblock cssExtras %}
+  	{% block headExtras %}
+  	{% endblock headExtras%}
+  </head>
+  <body>
+  
+ {% load nav %}
+ {% block nav %}
+ {% if not hide_nav %}
+ <div class="row navbar-color" id="page-nav">
+ <h1 class="two columns logo">
+		<a href="/" title="xGDS $$$$SITE_NAME$$$$">
+     		<img src="{{STATIC_URL}}$$$$SITE_NAME$$$$/css/logo.png" class="logo" alt="$$$$SITE_NAME$$$$ logo" width="120" height="65" gumby-retina>
+     	</a>
+     	</h1>
+ <div class="row navbar ten columns" id="nav1">
+    <!-- Toggle for mobile navigation, targeting the <ul> -->
+    <a class="toggle" gumby-trigger="#nav1 > ul" href="#"><i class="icon-menu"></i></a>
+		{% if navigation_tab %}
+        	{% nav navigation_tab %}
+        {% endif %}
+		{% block sitemenu-content %}
+		<ul > 
+            <li>
+            {% if user.is_authenticated %}
+                 <a href="{{ logout_url }}" title="Logout">Logout&nbsp;&nbsp;{{ user.first_name }}</a>
+            {% else %} <!-- user.is_authenticated -->
+                <a href="{{ login_url_with_next }}"title="Login">Login</a>
+            {% endif %} 
+            </li>
+         </ul>	
+          {% block sitemenu-content-secondary %}
+  		  {% endblock sitemenu-content-secondary %}
+  		  <a class="toggle" gumby-trigger=".sitemenu-nav-secondary ul" href="#"><i class="icon-menu subnav" ></i></a>
+   </div>
+  
+   </div>
+
+  {% endblock sitemenu-content %}
+{% endif %} <!-- if not hideNav -->
+
+{% endblock nav %}
+
+{% block subnav %}
+{% endblock subnav %}
+
+	
+{% if errorstring %}
+    <div class="row errors"  id="errors">
+    <ul>
+	    <li class="danger alert">
+	 	{{errorstring}}
+	 	</li>
+ 	</ul>
+   </div>
+{% endif %}
+
+	<div class="row twelve columns" id="page-content">			
+      {% block contents %}
+      	{% block content %}
+      	{% endblock %}
+      {% endblock %}
+    </div>
+    
+   	{% block footer %}
+	{% endblock footer %}
+	
+    
+    {% block scripts %}
+	<script src="{{ EXTERNAL_URL }}jquery/dist/jquery.min.js"></script>
+
+	<!--
+	Include gumby.js followed by UI modules followed by gumby.init.js
+	Or concatenate and minify into a single file -->
+	<script gumby-touch="{{ EXTERNAL_URL }}gumby/js/libs" src="{{ EXTERNAL_URL }}gumby/js/libs/gumby.js"></script>
+	<script src="{{ EXTERNAL_URL }}gumby/js/libs/ui/gumby.retina.js"></script>
+	<script src="{{ EXTERNAL_URL }}gumby/js/libs/ui/gumby.fixed.js"></script>
+	<script src="{{ EXTERNAL_URL }}gumby/js/libs/ui/gumby.skiplink.js"></script>
+	<script src="{{ EXTERNAL_URL }}gumby/js/libs/ui/gumby.toggleswitch.js"></script>
+	<script src="{{ EXTERNAL_URL }}gumby/js/libs/ui/gumby.checkbox.js"></script>
+	<script src="{{ EXTERNAL_URL }}gumby/js/libs/ui/gumby.radiobtn.js"></script>
+	<script src="{{ EXTERNAL_URL }}gumby/js/libs/ui/gumby.tabs.js"></script>
+	<script src="{{ EXTERNAL_URL }}gumby/js/libs/ui/gumby.navbar.js"></script>
+	<script src="{{ EXTERNAL_URL }}gumby/js/libs/ui/jquery.validation.js"></script>
+	<script src="{{ EXTERNAL_URL }}gumby/js/libs/gumby.init.js"></script>
+
+	<script src="{{ EXTERNAL_URL }}gumby/js/plugins.js"></script>
+	<script src="{{ EXTERNAL_URL }}gumby/js/main.js"></script>
+
+    {% endblock %}
+
+    <script type="text/javascript">
+      {% block jsSetVars %}
+      {% endblock jsSetVars %}
+
+      {% block jsInit %}
+      {% endblock jsInit %}
+    </script>
+    
+
+  </body>
+</html>

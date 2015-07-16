@@ -1,7 +1,17 @@
 # __BEGIN_LICENSE__
-# Copyright (C) 2008-2010 United States Government as represented by
-# the Administrator of the National Aeronautics and Space Administration.
-# All Rights Reserved.
+# Copyright (c) 2015, United States Government, as represented by the
+# Administrator of the National Aeronautics and Space Administration.
+# All rights reserved.
+#
+# The xGDS platform is licensed under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# http://www.apache.org/licenses/LICENSE-2.0.
+#
+# Unless required by applicable law or agreed to in writing, software distributed
+# under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+# CONDITIONS OF ANY KIND, either express or implied. See the License for the
+# specific language governing permissions and limitations under the License.
 # __END_LICENSE__
 
 import os
@@ -9,6 +19,7 @@ from setuptools import setup, find_packages, Command
 
 import os.path as op
 import subprocess
+
 
 def read_file(filename):
     """Read a file into a string"""
@@ -20,10 +31,11 @@ def read_file(filename):
         return ''
 
 # Use the docstring of the __init__ file to be the description
-#DESC = " ".join(__import__('$$$$SITE_NAME$$$$').__doc__.splitlines()).strip()
+# DESC = " ".join(__import__('$$$$SITE_NAME$$$$').__doc__.splitlines()).strip()
 DESC = ""
 
 PROJ_ROOT = op.abspath(op.dirname(__file__))
+
 
 def find_sub_apps(directory=PROJ_ROOT):
     """We define a sub-application to be any top-level subdirectory that
@@ -31,15 +43,16 @@ def find_sub_apps(directory=PROJ_ROOT):
     for submodule based apps, since there could be an odd app or two that
     aren't based on a git submodule, or it could be the main 'glue'
     application."""
-    requiredFiles = [ 'models.py', 'urls.py' ]
+    requiredFiles = ['models.py', 'urls.py']
     subApps = []
     for entry in os.listdir(directory):
         fullEntry = op.join(directory, entry)
         if not op.isdir(fullEntry):
             continue
-        if all([ op.exists(op.join(fullEntry, f)) for f in requiredFiles ]):
+        if all([op.exists(op.join(fullEntry, f)) for f in requiredFiles]):
             subApps.append((entry, fullEntry))
     return subApps
+
 
 def find_submodules(directory=op.join(PROJ_ROOT, 'apps')):
     """We define a submodule as a subdirectory in submodules which contains a
@@ -55,13 +68,14 @@ def find_submodules(directory=op.join(PROJ_ROOT, 'apps')):
             subModules.append((entry, fullSubDir))
     return subModules
 
+
 class RunSubCommand(Command):
     """Run a sub-command on the sub-apps. This class is meant to be subclassed.
     Override 'self.subcommand' in initialize_options to specify what command
     to run. If you override run, be sure to call this class' run to
     run the subcommand."""
-    user_options = [ ]
-    
+    user_options = []
+
     # Option defaults
     def initialize_options(self):
         self.subcommand = None
@@ -89,10 +103,11 @@ class RunSubCommand(Command):
 
             subprocess.call(["python", setupPath, self.subcommand])
 
+
 class TestCommand(RunSubCommand):
     description = 'test geocam command'
-    user_options = [ ]
-    
+    user_options = []
+
     # Option defaults
     def initialize_options(self):
         self.subcommand = 'geocam'
@@ -101,13 +116,14 @@ class TestCommand(RunSubCommand):
     def finalize_options(self):
         pass
 
+
 class SymlinkCommand(Command):
     """This command makes the submodule app directories symlinked to the
     site-level. Will not work on windows."""
     description = 'symlink submodules to the main site level'
-    user_options = [ ('force', 'f', 'overwrite existing symlinks') ]
-    boolean_options = [ 'force' ]
-    
+    user_options = [('force', 'f', 'overwrite existing symlinks')]
+    boolean_options = ['force']
+
     # Option defaults
     def initialize_options(self):
         self.force = False
@@ -130,10 +146,11 @@ class SymlinkCommand(Command):
                 os.remove(destination)
             os.symlink(directory, destination)
 
+
 class MediaCommand(Command):
     description = 'collect together the site-level static media'
-    user_options = [ ('force', 'f', 'overwrite existing symlinks') ]
-    boolean_options = [ 'force' ]
+    user_options = [('force', 'f', 'overwrite existing symlinks')]
+    boolean_options = ['force']
 
     # Option defaults
     def initialize_options(self):
@@ -163,25 +180,25 @@ class MediaCommand(Command):
                     continue
                 os.remove(destination)
             os.symlink(directory, destination)
-        
+
 
 setup(
-    name = "$$$$SITE_NAME$$$$",
-    version = '1.0', #__import__('$$$$SITE_NAME$$$$').get_version().replace(' ', '-'),
-    url = '',
-    author = '$$$$AUTHOR$$$$',
-    author_email = '',
-    description = DESC,
-    long_description = read_file('README'),
-    packages = find_packages(),
-    include_package_data = True,
+    name="$$$$SITE_NAME$$$$",
+    version='1.0',  # __import__('$$$$SITE_NAME$$$$').get_version().replace(' ', '-'),
+    url='',
+    author='$$$$AUTHOR$$$$',
+    author_email='',
+    description=DESC,
+    long_description=read_file('README'),
+    packages=find_packages(),
+    include_package_data=True,
     install_requires=read_file('requirements.txt'),
-    classifiers = [
+    classifiers=[
         'License :: OSI Approved :: NASA Open Source Agreement',
         'Framework :: Django',
     ],
 
-    cmdclass = {
+    cmdclass={
         'link_submodules': SymlinkCommand,
         'link_media': MediaCommand
     },
