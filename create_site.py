@@ -54,6 +54,50 @@ def main(repl, dest, templ_dir):
             open(dest_fn, 'w').write(data)
             os.chmod(dest_fn, os.stat(source_fn)[0])
 
+    # now create the primary app
+    # first clone the repository
+    print "CHECKOUT OUT APP SKELETON"
+    subprocess.check_call(['git clone https://github.com/geocam/geocamDjangoAppSkeleton.git'], env=os.environ, executable='/bin/bash', shell=True)
+    # then invoke it
+    appString = './geocamDjangoAppSkeleton/create_app.py --site-app -a %s -n %s -d %s' % (repl['AUTHOR'], repl['SITE_NAME'], repl['SITE_NAME'] + "/apps/")
+    subprocess.check_call([appString], env=os.environ, executable='/bin/bash', shell=True)
+    subprocess.call(['rm -rf geocamDjangoAppSkeleton'], env=os.environ, executable='/bin/bash', shell=True)
+    print "DONE CREATING APP"
+
+    print "-----INITIALIZING LOCAL GIT REPO-----"
+    WORKINGDIR = os.path.join(".", repl['SITE_NAME'])
+    print 'WORKINGDIR: ' + WORKINGDIR
+    os.chdir(WORKINGDIR)
+    print os.getcwd()
+    CWD = os.getcwd()
+    process = subprocess.Popen(['git init .'], cwd=CWD, env=os.environ, executable='/bin/bash', shell=True, stdout=subprocess.PIPE)
+    print 'GIT INIT:{}'.format(process.communicate()[0])
+    process = subprocess.Popen(['git add -A'], cwd=CWD, env=os.environ, executable='/bin/bash', shell=True, stdout=subprocess.PIPE)
+    print 'GIT ADD:{}'.format(process.communicate()[0])
+    process = subprocess.Popen(["git commit -m 'created app from template'"], cwd=CWD, env=os.environ, executable='/bin/bash', shell=True, stdout=subprocess.PIPE)
+    print 'GIT COMMIT:{}'.format(process.communicate()[0])
+    process = subprocess.Popen(["git status"], cwd=CWD, env=os.environ, executable='/bin/bash', shell=True, stdout=subprocess.PIPE)
+    print 'GIT STATUS:{}'.format(process.communicate()[0])
+    print "-----DONE INITIALIZING LOCAL GIT REPO-----"
+
+    import submodules
+    for entry in submodules.SUBMODULES:
+        SUBNAME = entry[0]
+        print "-----ADDING SUBMODULE " + SUBNAME + "-----"
+        SUBPATH = os.path.join('submodules', SUBNAME)
+        print 'git submodule add ' + entry[1] + ' ' + SUBPATH
+        process = subprocess.Popen(['git submodule add ' + entry[1] + ' ' + SUBPATH], cwd=CWD, env=os.environ, executable='/bin/bash', shell=True, stdout=subprocess.PIPE)
+        print 'GIT SUBMODULE ADD:{}'.format(process.communicate()[0])
+        print 'sym linking ln -s ' + os.path.join('..', SUBPATH, SUBNAME) + ' apps'
+        process = subprocess.Popen(['ln -s ' + os.path.join('..', SUBPATH, SUBNAME) + ' apps'], cwd=CWD, env=os.environ, executable='/bin/bash', shell=True, stdout=subprocess.PIPE)
+        print 'SYMLINK:{}'.format(process.communicate()[0])
+        process = subprocess.Popen(['git add ' + os.path.join('apps', SUBNAME)], cwd=CWD, env=os.environ, executable='/bin/bash', shell=True, stdout=subprocess.PIPE)
+        print 'GIT ADD SUBMODULE :{}'.format(process.communicate()[0])
+        process = subprocess.Popen(['git commit -m "added submodule ' + SUBNAME + '"'], cwd=CWD, env=os.environ, executable='/bin/bash', shell=True, stdout=subprocess.PIPE)
+        print 'GIT COMMIT :{}'.format(process.communicate()[0])
+
+    os.chdir("..")
+
     if repl['VIRTENV'] == 'NONE':
         print "Skipping the virtual environment setup."
         return
@@ -84,11 +128,12 @@ def main(repl, dest, templ_dir):
 
     print "Now type: workon %s" % repl['VIRTENV']
 
+
 if __name__ == '__main__':
     from optparse import OptionParser
     parser = OptionParser()
     parser.add_option("-a", "--author", dest="author", help="The name of the author.")
-    parser.add_option("-n", "--name", dest="site_name", help="The name of the site, like 'geocamAwesome'.")
+    parser.add_option("-n", "--name", dest="site_name", help="The name of the site, like 'xgds_mysite'.")
     parser.add_option("-v", "--VIRTENV", dest="VIRTENV", help="The name of the virtualenv.")
     parser.add_option("-d", "--dest", dest="destination", help="Where to put the new site. Relative paths are recognized.")
     parser.add_option("-t", "--template", dest="template", help="The template to use as a basis for the new site.", default=os.path.abspath(os.path.join(os.path.dirname(__file__), 'skel')))

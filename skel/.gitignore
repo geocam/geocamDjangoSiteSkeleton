@@ -1,3 +1,4 @@
+.git
 *.pyc
 dev.db
 settings.py
@@ -10,3 +11,5 @@ media/css/*.r*.css
 *DS_Store
 *.egg-info
 *~
+.project
+.pydevproject
