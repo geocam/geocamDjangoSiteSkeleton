@@ -23,10 +23,11 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
+
 from django.core import mail
 
 from $$$$APP_NAME$$$$ import settings
-from $$$$APP_NAME$$$$ import forms
+from $$$$APP_NAME$$$$.forms import *
 
 registration_email_template = string.Template(  # noqa
 """
@@ -72,15 +73,12 @@ def registerUser(request):
             user = User.objects.create_user(user_data['username'], user_data['email'], user_data['password1'])
             user.is_active = False
             user.save()
-            profile = user.profile
-            profile.registration_key = uuid4().hex
-            profile.save()
             mail.mail_managers(
                 'Registration request from %s' % user.username,
                 registration_email_template.substitute({
                     'username': user.username,
                     'email': user.email,
-                    'url': request.build_absolute_uri(reverse('user-activate', args=[profile.registration_key])),
+                    'url': request.build_absolute_uri(reverse('user-activate', args=[user.id])),
                     'comments': user_data['comments'],
                     'ip_address': request.META['REMOTE_ADDR'],
                     'referrer': request.META['HTTP_REFERER'],
@@ -92,7 +90,7 @@ def registerUser(request):
 
 
 @permission_required('add_user')
-def activateUser(request, registration_key):
+def activateUser(request, user_id):
 
     def render_message(msg):
         return render_to_response("registration/simple_message.html",
@@ -100,18 +98,15 @@ def activateUser(request, registration_key):
                                   context_instance=RequestContext(request))
 
     try:
-        profile = UserProfile.objects.get(registration_key=registration_key)
-    except UserProfile.DoesNotExist:
-        return render_message("No profile matches the given registration key")
-    user = profile.user
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return render_message("No user with the given id")
 
     if user.is_active:
         return render_message("The user %s has already been activated.  Someone must have gotten here first." % user.username)
 
     user.is_active = True
     user.save()
-    # profile.registration_key = None
-    profile.save()
     mail.send_mail(
         settings.EMAIL_SUBJECT_PREFIX + "Your account has been activated",
         """
