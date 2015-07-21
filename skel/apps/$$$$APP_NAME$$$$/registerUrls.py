@@ -17,14 +17,15 @@
 from django.conf.urls import patterns
 from django.contrib import auth
 
+import $$$$APP_NAME$$$$.register
 
 urlpatterns = patterns('',
                        (r'^login/$', 'django.contrib.auth.views.login', {'loginRequired': False}, 'user-login'),
                        (r'^logout/$', 'django.contrib.auth.views.logout', {'loginRequired': False, 'next_page': '/accounts/login/'}),
-                       (r'^register/$', 'basaltApp.register.registerUser', {'loginRequired': False}, 'user-registration'),
-                       (r'^activate/(.*)$', 'basaltApp.register.activateUser', {}, 'user-activate'),
+                       (r'^register/$', register.registerUser, {'loginRequired': False}, 'user-registration'),
+                       (r'^activate/(.*)$', register.activateUser, {}, 'user-activate'),
                        (r'^reset-password/$', auth.views.password_reset, {'loginRequired': False}, 'reset-password'),
-                       (r'^reset-password-done/$', auth.views.password_reset_done, {'loginRequired': False}),
+                       (r'^reset-password-done/$', auth.views.password_reset_done, {'loginRequired': False}, 'password_reset_done'),
                        (r'^reset-password-confirm/(?P<uidb36>[^/]+)/(?P<token>.+)$', auth.views.password_reset_confirm, {'loginRequired': False}),
                        (r'^reset-password-complete/$', auth.views.password_reset_complete, {'loginRequired': False}),
                        )
