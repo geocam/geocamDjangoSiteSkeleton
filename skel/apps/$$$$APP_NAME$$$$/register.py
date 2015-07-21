@@ -26,8 +26,7 @@ from django.contrib.auth.models import User
 from django.core import mail
 
 from $$$$APP_NAME$$$$ import settings
-from $$$$APP_NAME$$$$.forms import UserRegistrationForm
-
+from $$$$APP_NAME$$$$ import forms
 
 registration_email_template = string.Template(  # noqa
 """

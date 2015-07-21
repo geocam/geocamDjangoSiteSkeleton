@@ -37,6 +37,7 @@ urlpatterns = patterns('',
                        (r'^accounts/reset-password-confirm/(?P<uidb36>[^/]+)/(?P<token>.+)$', auth.views.password_reset_confirm, {'loginRequired': False}),
                        (r'^accounts/reset-password-complete/$', auth.views.password_reset_complete, {'loginRequired': False}),
                        (r'^$', RedirectView.as_view(url=settings.SCRIPT_NAME + '$$$$APP_NAME$$$$/'), {}),
+                       (r'^$$$$APP_NAME$$$$/', include('$$$$APP_NAME$$$$.registerUrls')),
                        (r'^$$$$APP_NAME$$$$/', include('$$$$APP_NAME$$$$.urls')),
                        (r'^favicon\.ico$', RedirectView.as_view(url=settings.STATIC_URL + '$$$$APP_NAME$$$$/icons/favicon.ico'), {'readOnly': True}),
                        
