@@ -6,7 +6,7 @@
   <head>
   	<meta charset="utf-8">
     <title>
-    {% block siteTitle %}{% block siteSection %}{% endblock siteSection%} {% block siteTitle %}$$$$SITE_NAME$$$${% endblock siteTitle%}{% endblock title%}
+    {% block title %}{% block siteSection %}{% endblock siteSection%} {% block siteTitle %}$$$$LEGIBLE_NAME$$$${% endblock siteTitle%}{% endblock title%}
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
     <script src="{{ EXTERNAL_URL }}modernizr/modernizr.js"></script>
@@ -23,8 +23,8 @@
  {% if not hide_nav %}
  <div class="row navbar-color" id="page-nav">
  <h1 class="two columns logo">
-		<a href="/" title="xGDS $$$$SITE_NAME$$$$">
-     		<img src="{{STATIC_URL}}$$$$SITE_NAME$$$$/css/logo.png" class="logo" alt="$$$$SITE_NAME$$$$ logo" width="120" height="65" gumby-retina>
+		<a href="/" title="xGDS $$$$LEGIBLE_NAME$$$$">
+     		<img src="{{STATIC_URL}}$$$$APP_NAME$$$$/css/logo.png" class="logo" alt="$$$$LEGIBLE_NAME$$$$ logo" width="120" height="65" gumby-retina>
      	</a>
      	</h1>
  <div class="row navbar ten columns" id="nav1">
@@ -34,7 +34,11 @@
         	{% nav navigation_tab %}
         {% endif %}
 		{% block sitemenu-content %}
-		<ul > 
+		<ul >
+			<!-- TOP LEVEL NAVIGATION LINKS GO HERE --> 
+			<li {% currentnav map* xgds_map_server* %}>
+				<a href="{% url 'map' %}" title="Map">Map</a>
+			</li>
             <li>
             {% if user.is_authenticated %}
                  <a href="{{ logout_url }}" title="Logout">Logout&nbsp;&nbsp;{{ user.first_name }}</a>

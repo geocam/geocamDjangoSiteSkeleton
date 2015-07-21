@@ -194,7 +194,7 @@ setup(
     include_package_data=True,
     install_requires=read_file('requirements.txt'),
     classifiers=[
-        'License :: OSI Approved :: NASA Open Source Agreement',
+        'License :: OSI Approved :: Apache 2 License Agreement',
         'Framework :: Django',
     ],
 

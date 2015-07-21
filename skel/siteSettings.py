@@ -29,10 +29,13 @@
 import sys
 import os
 import scss
-import geocamUtil
 
 from django.conf import global_settings
 
+import geocamUtil
+import xgds_map_server
+import xgds_data
+import $$$$APP_NAME$$$$
 
 USING_DJANGO_DEV_SERVER = ('runserver' in sys.argv)
 
@@ -61,10 +64,21 @@ ADMINS = (
 MANAGERS = ADMINS
 
 # Databases
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': 'dev.db'
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'dev.db'
+        'ENGINE': 'django.contrib.gis.db.backends.mysql', # django.db.backends.mysql',
+        'NAME': '$$$$SITE_NAME$$$$',
+        'USER': 'vagrant',
+        'PASSWORD': 'vagrant',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
     }
 }
 
@@ -162,7 +176,9 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(PROJ_ROOT, 'apps/$$$$SITE_NAME$$$$/templates'),
+    os.path.join(PROJ_ROOT, 'apps/$$$$APP_NAME$$$$/templates'),
+    os.path.join(PROJ_ROOT, 'apps/$$$$APP_NAME$$$$/templates/$$$$APP_NAME$$$$'),
+    os.path.join(PROJ_ROOT, 'apps/$$$$APP_NAME$$$$/templates/registration'),
 
     # Templates for utility scripts
     os.path.join(PROJ_ROOT, 'bin/templates'),
@@ -171,7 +187,18 @@ TEMPLATE_DIRS = (
 # apps should be listed from "most specific" to "most general".  that
 # way, templates in more specific apps override ones from more general
 # apps.
-INSTALLED_APPS = ('$$$$SITE_NAME$$$$',
+INSTALLED_APPS = ('$$$$APP_NAME$$$$',
+                  
+                  # TODO uncomment the submodules that you are including
+                  # 'xgds_notes',
+                  # 'xgds_planner2',
+                  'xgds_map_server',
+                  'xgds_data',
+                  # 'xgds_video',
+                  # 'xgds_plot',
+
+                  # 'geocamTrack',
+                  # 'geocamPycroraptor2',
                   'geocamUtil',
                   'django.contrib.admin',
                   'django.contrib.auth',
@@ -193,6 +220,9 @@ GEOCAM_UTIL_SECURITY_SSL_REQUIRED_BY_DEFAULT = False
 GEOCAM_UTIL_SECURITY_REQUIRE_ENCRYPTED_PASSWORDS = False
 
 GEOCAM_UTIL_SECURITY_LOGIN_REQUIRED_BY_DEFAULT = 'write'
+
+# This is an optional setting but if you don't have it enabled then the map server and the xgds_data won't work
+XGDS_DATA_LOG_ENABLED = True
 
 # email settings
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
@@ -252,11 +282,26 @@ if DEBUG_TOOLBAR:
 VAR_ROOT = PROJ_ROOT + 'var/'
 
 BOWER_INSTALLED_APPS = ()
-
 BOWER_INSTALLED_APPS += geocamUtil.settings.GEOCAM_UTIL_BOWER_INSTALLED_APPS
-BOWER_INSTALLED_APPS += $$$$SITE_NAME$$$$.settings.$$$$SITE_NAME$$$$_BOWER_INSTALLED_APPS
+BOWER_INSTALLED_APPS += xgds_map_server.settings.XGDS_MAP_SERVER_BOWER_INSTALLED_APPS
+BOWER_INSTALLED_APPS += xgds_data.settings.XGDS_DATA_BOWER_INSTALLED_APPS
+# BOWER_INSTALLED_APPS += xgds_video.settings.XGDS_VIDEO_BOWER_INSTALLED_APPS
+# BOWER_INSTALLED_APPS += xgds_plot.settings.XGDS_PLOT_BOWER_INSTALLED_APPS
+# BOWER_INSTALLED_APPS += xgds_notes.settings.XGDS_NOTES_BOWER_INSTALLED_APPS
+# BOWER_INSTALLED_APPS += geocamTrack.settings.GEOCAM_TRACK_BOWER_INSTALLED_APPS
+# BOWER_INSTALLED_APPS += xgds_planner2.settings.XGDS_PLANNER2_BOWER_INSTALLED_APPS
 
 
+PYRAPTORD_SERVICE = False
 
-
-
+# TODO replace this with your siteframes
+XGDS_SITEFRAMES = {'10S': {  # ROVERSCAPE site frame
+                           'east0': 582724.0,
+                           'north0': 4141835.0,
+                           'zone': '10S',
+                           'zoneNumber': 10,
+                           'axes': 'ENU',
+                           'north': 'grid'
+                           },
+                   }
+XGDS_CURRENT_SITEFRAME = XGDS_SITEFRAMES['10S']

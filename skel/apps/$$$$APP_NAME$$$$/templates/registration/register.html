@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block contents %}
+<form method="post" action="{% url 'user-registration' %}">
+{{register_form.as_p}}
+<input type="submit" value="Register"/>
+</form>
+{% if form.errors %}
+<p>Form has errors</p>
+{% endif %}
+{% endblock contents %}

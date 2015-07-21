@@ -59,7 +59,7 @@ def main(repl, dest, templ_dir):
     print "CHECKOUT OUT APP SKELETON"
     subprocess.check_call(['git clone https://github.com/geocam/geocamDjangoAppSkeleton.git'], env=os.environ, executable='/bin/bash', shell=True)
     # then invoke it
-    appString = './geocamDjangoAppSkeleton/create_app.py --site-app -a %s -n %s -d %s' % (repl['AUTHOR'], repl['SITE_NAME'], repl['SITE_NAME'] + "/apps/")
+    appString = './geocamDjangoAppSkeleton/create_app.py --site-app -a %s -n %s -d %s' % (repl['AUTHOR'], repl['APP_NAME'], repl['SITE_NAME'] + "/apps/")
     subprocess.check_call([appString], env=os.environ, executable='/bin/bash', shell=True)
     subprocess.call(['rm -rf geocamDjangoAppSkeleton'], env=os.environ, executable='/bin/bash', shell=True)
     print "DONE CREATING APP"
@@ -134,6 +134,8 @@ if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option("-a", "--author", dest="author", help="The name of the author.")
     parser.add_option("-n", "--name", dest="site_name", help="The name of the site, like 'xgds_mysite'.")
+    parser.add_option("-c", "--childAppName", dest="app_name", help="The name of the main app, like 'mysiteApp'.")
+    parser.add_option("-l", "--legibleName", dest="legible_name", help="The legible name of the website, like 'mysite' or 'BASALT'.")
     parser.add_option("-v", "--VIRTENV", dest="VIRTENV", help="The name of the virtualenv.")
     parser.add_option("-d", "--dest", dest="destination", help="Where to put the new site. Relative paths are recognized.")
     parser.add_option("-t", "--template", dest="template", help="The template to use as a basis for the new site.", default=os.path.abspath(os.path.join(os.path.dirname(__file__), 'skel')))
@@ -142,6 +144,8 @@ if __name__ == '__main__':
 
     repl = {
         'SITE_NAME': None,
+        'APP_NAME': None,
+        'LEGIBLE_NAME': None,
         'AUTHOR': None,
         'SITE_SECRET': gen_secret()
     }
@@ -154,9 +158,22 @@ if __name__ == '__main__':
         repl['SITE_NAME'] = options.site_name
     elif len(args) > 0:
         repl['SITE_NAME'] = args[0]
-
     while not repl['SITE_NAME']:
-        repl['SITE_NAME'] = raw_input('Site name: ')
+        repl['SITE_NAME'] = raw_input('Site name (ie xgds_bla): ')
+
+    if options.app_name:
+        repl['APP_NAME'] = options.app_name
+    elif len(args) > 1:
+        repl['APP_NAME'] = args[1]
+    while not repl['APP_NAME']:
+        repl['APP_NAME'] = raw_input('App name (ie blaApp): ')
+
+    if options.legible_name:
+        repl['LEGIBLE_NAME'] = options.legible_name
+    elif len(args) > 2:
+        repl['LEGIBLE_NAME'] = args[2]
+    while not repl['LEGIBLE_NAME']:
+        repl['LEGIBLE_NAME'] = raw_input('Legible name (ie BLA): ')
 
     if options.author:
         repl['AUTHOR'] = options.author
