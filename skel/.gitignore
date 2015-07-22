@@ -1,7 +1,7 @@
 .git
 *.pyc
 dev.db
-settings.py
+/settings.py
 media/ugc
 docs/_build/
 src/
