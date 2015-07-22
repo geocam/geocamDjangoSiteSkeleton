@@ -251,7 +251,8 @@ def doit(opts, args):
     # mark overall completion
     writeFileMakeDir(STATUS_PATH_TEMPLATE % 'bootstrap', 'DONE')
 
-    print '\nnow "source sourceme.sh" before running manage.py again'
+    if not opts.puppet:
+        print '\nnow "source sourceme.sh" before running manage.py again'
     sys.exit(1)
 
 
@@ -267,6 +268,9 @@ def main():
     parser.add_option('-v', '--verbose',
                       action='count', default=0,
                       help='Increase verbosity, can specify multiple times')
+    parser.add_option('-p', '--puppet',
+                      action='store_true', default=False,
+                      help='Pass this when calling from puppet to disable exit printout')
     opts, args = parser.parse_args()
     doit(opts, args)
 
