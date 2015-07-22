@@ -13,3 +13,6 @@ media/css/*.r*.css
 *~
 .project
 .pydevproject
+bower_components/
+sourceme.sh
+build/
