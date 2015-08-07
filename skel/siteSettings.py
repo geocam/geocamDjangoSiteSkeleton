@@ -28,22 +28,53 @@
 # This file *should* be checked into git.
 import sys
 import os
-import scss
+import importlib
 
 from django.conf import global_settings
 
-import geocamUtil
-import xgds_map_server
-import xgds_data
-import $$$$APP_NAME$$$$
+# apps should be listed from "most specific" to "most general".  that
+# way, templates in more specific apps override ones from more general
+# apps.
+INSTALLED_APPS = ('$$$$APP_NAME$$$$',
+
+                  # TODO uncomment the submodules that you are including
+                  # 'xgds_notes',
+                  # 'xgds_planner2',
+                  'xgds_map_server',
+                  'xgds_data',
+                  # 'xgds_video',
+                  # 'xgds_plot',
+
+                  # 'geocamTrack',
+                  # 'geocamPycroraptor2',
+                  'geocamUtil',
+                  'django.contrib.admin',
+                  'django.contrib.auth',
+                  'django.contrib.contenttypes',
+                  'django.contrib.sessions',
+                  'django.contrib.sites',
+                  'django.contrib.messages',
+                  'django.contrib.staticfiles',
+                  'pipeline',
+                  'djangobower',
+                  )
+
+for app in INSTALLED_APPS:
+    try:
+        appSettings = importlib.import_module(app + ".defaultSettings")
+        for key, val in vars(appSettings).iteritems():
+            if not key.startswith('_'):
+                globals()[key] = val
+    except:
+        pass
 
 USING_DJANGO_DEV_SERVER = ('runserver' in sys.argv)
+USE_STATIC_SERVE = USING_DJANGO_DEV_SERVER
 
 SCRIPT_NAME = os.environ['DJANGO_SCRIPT_NAME']  # set in sourceme.sh
 if USING_DJANGO_DEV_SERVER:
     # django dev server deployment won't work with other SCRIPT_NAME settings
     SCRIPT_NAME = '/'
-
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -62,14 +93,6 @@ ADMINS = (
     # ('$$$$AUTHOR$$$$', 'your_email@domain.com'),
 )
 MANAGERS = ADMINS
-
-# Databases
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': 'dev.db'
-#     }
-# }
 
 DATABASES = {
     'default': {
@@ -139,6 +162,7 @@ ADMIN_MEDIA_PREFIX = '/static/admin/'
 TEMPLATE_CONTEXT_PROCESSORS = (global_settings.TEMPLATE_CONTEXT_PROCESSORS
                                + ('django.core.context_processors.request',
                                   'django.core.context_processors.static',
+                                  'geocamUtil.context_processors.settings',
                                   'geocamUtil.context_processors.AuthUrlsContextProcessor.AuthUrlsContextProcessor',
                                   'geocamUtil.context_processors.SettingsContextProcessor.SettingsContextProcessor',
                                   ))
@@ -184,34 +208,6 @@ TEMPLATE_DIRS = (
     os.path.join(PROJ_ROOT, 'bin/templates'),
 )
 
-# apps should be listed from "most specific" to "most general".  that
-# way, templates in more specific apps override ones from more general
-# apps.
-INSTALLED_APPS = ('$$$$APP_NAME$$$$',
-                  
-                  # TODO uncomment the submodules that you are including
-                  # 'xgds_notes',
-                  # 'xgds_planner2',
-                  'xgds_map_server',
-                  'xgds_data',
-                  # 'xgds_video',
-                  # 'xgds_plot',
-
-                  # 'geocamTrack',
-                  # 'geocamPycroraptor2',
-                  'geocamUtil',
-                  'django.contrib.admin',
-                  'django.contrib.auth',
-                  'django.contrib.contenttypes',
-                  'django.contrib.sessions',
-                  'django.contrib.sites',
-                  'django.contrib.messages',
-                  'django.contrib.staticfiles',
-                  'pipeline',
-                  'djangobower',
-                  )
-
-USE_STATIC_SERVE = USING_DJANGO_DEV_SERVER
 LOGIN_URL = SCRIPT_NAME + 'accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 
@@ -282,15 +278,14 @@ if DEBUG_TOOLBAR:
 VAR_ROOT = PROJ_ROOT + 'var/'
 
 BOWER_INSTALLED_APPS = ()
-BOWER_INSTALLED_APPS += geocamUtil.settings.GEOCAM_UTIL_BOWER_INSTALLED_APPS
-BOWER_INSTALLED_APPS += xgds_map_server.settings.XGDS_MAP_SERVER_BOWER_INSTALLED_APPS
-BOWER_INSTALLED_APPS += xgds_data.settings.XGDS_DATA_BOWER_INSTALLED_APPS
-# BOWER_INSTALLED_APPS += xgds_video.settings.XGDS_VIDEO_BOWER_INSTALLED_APPS
-# BOWER_INSTALLED_APPS += xgds_plot.settings.XGDS_PLOT_BOWER_INSTALLED_APPS
-# BOWER_INSTALLED_APPS += xgds_notes.settings.XGDS_NOTES_BOWER_INSTALLED_APPS
-# BOWER_INSTALLED_APPS += geocamTrack.settings.GEOCAM_TRACK_BOWER_INSTALLED_APPS
-# BOWER_INSTALLED_APPS += xgds_planner2.settings.XGDS_PLANNER2_BOWER_INSTALLED_APPS
-
+BOWER_INSTALLED_APPS += GEOCAM_UTIL_BOWER_INSTALLED_APPS
+BOWER_INSTALLED_APPS += XGDS_MAP_SERVER_BOWER_INSTALLED_APPS
+BOWER_INSTALLED_APPS += XGDS_DATA_BOWER_INSTALLED_APPS
+# BOWER_INSTALLED_APPS += XGDS_VIDEO_BOWER_INSTALLED_APPS
+# BOWER_INSTALLED_APPS += XGDS_PLOT_BOWER_INSTALLED_APPS
+# BOWER_INSTALLED_APPS += XGDS_NOTES_BOWER_INSTALLED_APPS
+# BOWER_INSTALLED_APPS += GEOCAM_TRACK_BOWER_INSTALLED_APPS
+# BOWER_INSTALLED_APPS += XGDS_PLANNER2_BOWER_INSTALLED_APPS
 
 PYRAPTORD_SERVICE = False
 
@@ -305,3 +300,5 @@ XGDS_SITEFRAMES = {'10S': {  # ROVERSCAPE site frame
                            },
                    }
 XGDS_CURRENT_SITEFRAME = XGDS_SITEFRAMES['10S']
+
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
