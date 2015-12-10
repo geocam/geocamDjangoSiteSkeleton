@@ -3,7 +3,9 @@
 
 {% block contents %}
 <form method="post" action="{% url 'user-registration' %}">
-{{register_form.as_p}}
+<table>
+{{ register_form.as_table }}
+</table>
 <input type="submit" value="Register"/>
 </form>
 {% if form.errors %}

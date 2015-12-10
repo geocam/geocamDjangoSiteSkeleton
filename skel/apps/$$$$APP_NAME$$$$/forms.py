@@ -21,12 +21,12 @@ from django.contrib.auth.forms import UserCreationForm
 
 class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)
-    comments = forms.CharField(required=True, label="Introduce yourself", widget=forms.Textarea)
+    comments = forms.CharField(required=False, label="Introduce yourself", widget=forms.Textarea)
 
     def __init__(self, *args, **kwargs):
         super(UserRegistrationForm, self).__init__(*args, **kwargs)
-        # Hack to modify the sequence in which hte fields are rendered
-        self.fields.keyOrder = ['username', 'email', 'password1', 'password2', 'comments']
+        # Hack to modify the sequence in which the fields are rendered
+        self.fields.keyOrder = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2', 'comments']
 
     def clean_email(self):
         "Ensure that email addresses are unique for new users."
@@ -34,3 +34,12 @@ class UserRegistrationForm(UserCreationForm):
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError("A user with that email address already exists.")
         return email
+    
+    class Meta:
+        model = User
+        fields = ("username",'first_name', 'last_name', 'email', 'password1', 'password2', 'comments')
+
+
+class EmailFeedbackForm(forms.Form):
+    reply_to = forms.EmailField(required=False, label="Your email address")
+    email_content = forms.CharField(widget=forms.Textarea, label="Message")

@@ -9,8 +9,10 @@
     {% block title %}{% block siteSection %}{% endblock siteSection%} {% block siteTitle %}$$$$LEGIBLE_NAME$$$${% endblock siteTitle%}{% endblock title%}
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-    <script src="{{ EXTERNAL_URL }}modernizr/modernizr.js"></script>
+    {% block cssMain %}
     <link rel="stylesheet" type="text/css" href="{% static 'gumby/css/gumby.css' %}">
+    {% endblock cssMain %}
+    
  	{% block cssExtras %}
     {% endblock cssExtras %}
   	{% block headExtras %}
@@ -20,7 +22,6 @@
   
  {% load nav %}
  {% block nav %}
- {% if not hide_nav %}
  <div class="row navbar-color" id="page-nav">
  <h1 class="two columns logo">
 		<a href="/" title="xGDS $$$$LEGIBLE_NAME$$$$">
@@ -39,6 +40,25 @@
 			<li {% currentnav map* xgds_map_server* %}>
 				<a href="{% url 'map' %}" title="Map">Map</a>
 			</li>
+			<!-- uncomment to include; replace # with % in the url sections -->
+			<!--
+			<li {% currentnav planner2* %}>
+				<a href="{# url 'planner2_index' #}" title="plan">Plan</a>
+			</li>
+			<li {% currentnav *xgds_image* %} >
+				<a href="{# url 'xgds_image_search' #}" title="image">Image</a>
+			</li>
+ 			<li {% currentnav *note* %}>
+				<a href="{# url 'xgds_notes_review' #}" title="{{ settings.XGDS_NOTES_MONIKER }}">{{ settings.XGDS_NOTES_MONIKER }}</a>
+			</li>
+			-->
+			<li {% currentnav xgds_data_import %}>
+				<a href="{% url 'xgds_data_import' %}" title="Import">Import</a>
+			</li>
+			<li {% currentnav email_feedback %}>
+            	<a href="{% url 'email_feedback' %}">Feedback</a>
+            </li>
+			
             <li>
             {% if user.is_authenticated %}
                  <a href="{{ logout_url }}" title="Logout">Logout&nbsp;&nbsp;{{ user.first_name }}</a>
@@ -55,7 +75,6 @@
    </div>
 
   {% endblock sitemenu-content %}
-{% endif %} <!-- if not hideNav -->
 
 {% endblock nav %}
 
@@ -85,26 +104,8 @@
 	
     
     {% block scripts %}
+    <script src="{{ EXTERNAL_URL }}modernizr/modernizr.js"></script>
 	<script src="{{ EXTERNAL_URL }}jquery/dist/jquery.min.js"></script>
-
-	<!--
-	Include gumby.js followed by UI modules followed by gumby.init.js
-	Or concatenate and minify into a single file -->
-	<script gumby-touch="{{ EXTERNAL_URL }}gumby/js/libs" src="{{ EXTERNAL_URL }}gumby/js/libs/gumby.js"></script>
-	<script src="{{ EXTERNAL_URL }}gumby/js/libs/ui/gumby.retina.js"></script>
-	<script src="{{ EXTERNAL_URL }}gumby/js/libs/ui/gumby.fixed.js"></script>
-	<script src="{{ EXTERNAL_URL }}gumby/js/libs/ui/gumby.skiplink.js"></script>
-	<script src="{{ EXTERNAL_URL }}gumby/js/libs/ui/gumby.toggleswitch.js"></script>
-	<script src="{{ EXTERNAL_URL }}gumby/js/libs/ui/gumby.checkbox.js"></script>
-	<script src="{{ EXTERNAL_URL }}gumby/js/libs/ui/gumby.radiobtn.js"></script>
-	<script src="{{ EXTERNAL_URL }}gumby/js/libs/ui/gumby.tabs.js"></script>
-	<script src="{{ EXTERNAL_URL }}gumby/js/libs/ui/gumby.navbar.js"></script>
-	<script src="{{ EXTERNAL_URL }}gumby/js/libs/ui/jquery.validation.js"></script>
-	<script src="{{ EXTERNAL_URL }}gumby/js/libs/gumby.init.js"></script>
-
-	<script src="{{ EXTERNAL_URL }}gumby/js/plugins.js"></script>
-	<script src="{{ EXTERNAL_URL }}gumby/js/main.js"></script>
-
     {% endblock %}
 
     <script type="text/javascript">

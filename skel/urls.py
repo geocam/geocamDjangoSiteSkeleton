@@ -1,4 +1,4 @@
-# __BEGIN_LICENSE__
+#__BEGIN_LICENSE__
 # Copyright (c) 2015, United States Government, as represented by the
 # Administrator of the National Aeronautics and Space Administration.
 # All rights reserved.
@@ -12,7 +12,7 @@
 # under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 # CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
-# __END_LICENSE__
+#__END_LICENSE__
 
 from django.conf.urls import patterns, include
 from django.conf import settings
@@ -34,11 +34,13 @@ urlpatterns = patterns('',
                        (r'^favicon\.ico$', RedirectView.as_view(url=settings.STATIC_URL + '$$$$APP_NAME$$$$/icons/favicon.ico'), {'readOnly': True}),
                        
                        # TODO uncomment as appropriate to include submodule urls
+                       #  (r'^pycroraptor/', include('geocamPycroraptor2.urls')),
+                       #  (r'^track/', include('geocamTrack.urls')),
                        (r'^xgds_map_server/', include('xgds_map_server.urls')),
                        (r'^xgds_data/', include('xgds_data.urls')),
-                       #  (r'^notes/', include('xgds_notes.urls')),
+                       #  (r'^xgds_image/', include('xgds_image.urls')),
+                       #  (r'^notes/', include('xgds_notes2.urls')),
                        #  (r'^xgds_planner2/', include('xgds_planner2.urls')),
                        #  (r'^xgds_plot/', include('xgds_plot.urls')),
-                       #  (r'^xgds_video/', include('xgds_video.urls')),
-                       
+                       #  (r'^xgds_video/', include('xgds_video.urls')),                       
                        )

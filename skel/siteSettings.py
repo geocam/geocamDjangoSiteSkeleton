@@ -1,4 +1,4 @@
-# __BEGIN_LICENSE__
+#__BEGIN_LICENSE__
 # Copyright (c) 2015, United States Government, as represented by the
 # Administrator of the National Aeronautics and Space Administration.
 # All rights reserved.
@@ -12,8 +12,7 @@
 # under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 # CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
-# __END_LICENSE__
-
+#__END_LICENSE__
 
 # siteSettings.py -- site default settings
 #
@@ -31,6 +30,7 @@ import os
 import importlib
 
 from django.conf import global_settings
+from django.core.urlresolvers import reverse
 
 # apps should be listed from "most specific" to "most general".  that
 # way, templates in more specific apps override ones from more general
@@ -38,16 +38,21 @@ from django.conf import global_settings
 INSTALLED_APPS = ('$$$$APP_NAME$$$$',
 
                   # TODO uncomment the submodules that you are including
-                  # 'xgds_notes',
+                  # 'xgds_notes2',
                   # 'xgds_planner2',
                   'xgds_map_server',
                   'xgds_data',
+                  # 'xgds_image',
                   # 'xgds_video',
                   # 'xgds_plot',
 
                   # 'geocamTrack',
                   # 'geocamPycroraptor2',
                   'geocamUtil',
+                  'pipeline',
+                  # 'taggit', 
+                  'djangobower',
+                  
                   'django.contrib.admin',
                   'django.contrib.auth',
                   'django.contrib.contenttypes',
@@ -55,8 +60,6 @@ INSTALLED_APPS = ('$$$$APP_NAME$$$$',
                   'django.contrib.sites',
                   'django.contrib.messages',
                   'django.contrib.staticfiles',
-                  'pipeline',
-                  'djangobower',
                   )
 
 for app in INSTALLED_APPS:
@@ -211,6 +214,7 @@ TEMPLATE_DIRS = (
 LOGIN_URL = SCRIPT_NAME + 'accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 
+GEOCAM_UTIL_INSTALLER_USE_SYMLINKS = True
 GEOCAM_UTIL_SECURITY_ENABLED = not USING_DJANGO_DEV_SERVER
 GEOCAM_UTIL_SECURITY_SSL_REQUIRED_BY_DEFAULT = False
 GEOCAM_UTIL_SECURITY_REQUIRE_ENCRYPTED_PASSWORDS = False
@@ -240,7 +244,13 @@ STATICFILES_FINDERS = (
 
 BOWER_COMPONENTS_ROOT = PROJ_ROOT
 
-PIPELINE_JS = {}
+PIPELINE_JS = {'custom_map': {'source_filenames': ('xgds_map_server/js/showMapCoords.js',
+                                                   'xgds_map_server/js/initial_layers.js',
+                                                   ),
+                              'output_filename': 'js/custom_map.js',
+                              },
+               }
+
 PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.yuglify.YuglifyCompressor'
 PIPELINE_YUGLIFY_JS_ARGUMENTS = 'mangle:false --terminal'
 
@@ -277,10 +287,30 @@ if DEBUG_TOOLBAR:
 
 VAR_ROOT = PROJ_ROOT + 'var/'
 
+XGDS_DATA_MASKED_FIELDS = {
+    'auth': {'User': ['password', 'is_staff', 'is_active', 'is_superuser',
+                      'last_login',
+                      'date_joined', 'groups', 'user_permissions',
+                      ],
+             },
+}
+
+XGDS_DATA_EXPAND_RELATED = {'xgds_data': {'RequestLog': [('requestargument_set', 'all', 'Arguments'),
+                                                         ('responselog_set', 'all', 'Response'),
+                                                     ],
+                                          'ResponseLog': [('responseargument_set', 'all', 'Arguments'),
+                                                         ('responselist_set', 'all', 'Results'),
+                                                      ],
+                                          'Collection': [ (None,'contents','Contents'),
+                                                      ] ,
+                                          },
+                            }
+
 BOWER_INSTALLED_APPS = ()
 BOWER_INSTALLED_APPS += GEOCAM_UTIL_BOWER_INSTALLED_APPS
 BOWER_INSTALLED_APPS += XGDS_MAP_SERVER_BOWER_INSTALLED_APPS
 BOWER_INSTALLED_APPS += XGDS_DATA_BOWER_INSTALLED_APPS
+# BOWER_INSTALLED_APPS += XGDS_IMAGE_BOWER_INSTALLED_APPS
 # BOWER_INSTALLED_APPS += XGDS_VIDEO_BOWER_INSTALLED_APPS
 # BOWER_INSTALLED_APPS += XGDS_PLOT_BOWER_INSTALLED_APPS
 # BOWER_INSTALLED_APPS += XGDS_NOTES_BOWER_INSTALLED_APPS
@@ -302,3 +332,21 @@ XGDS_SITEFRAMES = {'10S': {  # ROVERSCAPE site frame
 XGDS_CURRENT_SITEFRAME = XGDS_SITEFRAMES['10S']
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
+XGDS_MAP_SERVER_DEFAULT_ZOOM = 15
+
+# If you are including imports, connect them to the import framework by uncommenting below
+XGDS_DATA_IMPORTS = {
+                     # XGDS_NOTES_MONIKER: '/notes/import',
+                     # "GPS Track": '/geocamTrack/importTrack',
+                     #"Images": '/xgds_image/import',
+                     }
+
+# TODO add useful comment
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
+        'LOCATION': '127.0.0.1:11211',
+        'TIMEOUT': 604800,
+    }
+}

@@ -38,3 +38,28 @@ SECRET_KEY = '{{ secretKey }}'
 #        'NAME': 'dev.db'
 #    }
 #}
+
+#
+# NOTE: Configuration below is an example for a production server.  Uncomment and tune
+#       for your production config as needed.  Note that the email backend line MUST be
+#       uncommented for outgoing email to actually get sent.  By default it is just written
+#       to a file in /tmp (see siteSettings.py).
+#
+
+# SERVER_ROOT_URL = 'https://basalt.xgds.org/'
+
+# GEOCAM_UTIL_SECURITY_ENABLED = True
+# GEOCAM_UTIL_SECURITY_SSL_REQUIRED_BY_DEFAULT = True
+# GEOCAM_UTIL_SECURITY_REQUIRE_ENCRYPTED_PASSWORDS = True
+# GEOCAM_UTIL_SECURITY_LOGIN_REQUIRED_BY_DEFAULT = True
+
+# EMAIL_HOST="email.arc.nasa.gov"
+# EMAIL_PORT=25
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# MANAGERS = (
+#     # Addresses listed here will get notification when a new user requests an account
+#     ('Darlene Lim', 'darline.lim@nasa.gov'),
+#     ('Tamar Cohen', 'tamar.e.cohen@nasa.gov'),
+#     ('Dave Lees', 'david.s.lees@nasa.gov'),
+# )

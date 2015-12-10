@@ -1,4 +1,4 @@
-# __BEGIN_LICENSE__
+#__BEGIN_LICENSE__
 # Copyright (c) 2015, United States Government, as represented by the
 # Administrator of the National Aeronautics and Space Administration.
 # All rights reserved.
@@ -12,12 +12,12 @@
 # under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 # CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
-# __END_LICENSE__
+#__END_LICENSE__
 
 from django.conf.urls import patterns
 from django.contrib import auth
 
-import $$$$APP_NAME$$$$.register
+from $$$$APP_NAME$$$$ import register
 
 urlpatterns = patterns('',
                        (r'^login/$', 'django.contrib.auth.views.login', {'loginRequired': False}, 'user-login'),
@@ -25,7 +25,8 @@ urlpatterns = patterns('',
                        (r'^register/$', register.registerUser, {'loginRequired': False}, 'user-registration'),
                        (r'^activate/(.*)$', register.activateUser, {}, 'user-activate'),
                        (r'^reset-password/$', auth.views.password_reset, {'loginRequired': False}, 'reset-password'),
-                       (r'^reset-password-done/$', auth.views.password_reset_done, {'loginRequired': False}, 'password_reset_done'),
+                       (r'^reset-password-done/$', auth.views.password_reset_done, {'loginRequired': False},'password_reset_done'),
                        (r'^reset-password-confirm/(?P<uidb36>[^/]+)/(?P<token>.+)$', auth.views.password_reset_confirm, {'loginRequired': False}),
                        (r'^reset-password-complete/$', auth.views.password_reset_complete, {'loginRequired': False}),
+                       (r'^feedback/$', register.email_feedback, {'loginRequired': False}, 'email_feedback'),
                        )

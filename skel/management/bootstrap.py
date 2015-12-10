@@ -229,7 +229,8 @@ def doit(opts, args):
     os.chdir(opts.siteDir)
     if os.path.exists('build/management/bootstrap/bootstrapStatus.txt'):
         sys.exit(0)
-    print 'bootstrapping...'
+    if not opts.puppet:
+        print 'bootstrapping...'
 
     logging.basicConfig(level=(logging.WARNING - opts.verbose * 10),
                         format='%(message)s')
